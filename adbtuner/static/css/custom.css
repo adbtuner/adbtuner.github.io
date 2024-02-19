@@ -1,0 +1,17 @@
+.profile .avatar {
+    display: inline-block;
+    width: 200px;
+    height: auto;
+    border-radius: 0;
+}
+
+pre {
+    word-wrap: normal;
+    padding: 16px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f9f9fa;
+    border: 1px solid #e1e2e6;
+    border-radius: 3px;
+}

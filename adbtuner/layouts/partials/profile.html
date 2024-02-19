@@ -1,0 +1,15 @@
+<header class="profile">
+    {{ if .Site.Params.avatarLink }}
+    <a href="{{ .Site.Params.avatarLink }}">
+        <img class="avatar" alt="ADBTuner" src="/images/adbtuner.svg" />
+    </a>
+    {{ else }}
+    <img class="avatar" alt="ADBTuner" src="/images/adbtuner.svg" />
+    {{ end }}
+
+
+
+    {{ with .Site.Params.Bio }}
+    <h2>{{ . | markdownify }}</h2>
+    {{ end }}
+</header>

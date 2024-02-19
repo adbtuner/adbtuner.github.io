@@ -1,0 +1,139 @@
+{{ define "main" }}
+{{ partial "profile.html" . }}
+
+<br>
+<div id="list-page">
+    <section>
+
+        <p>ADBTuner is a small, containerized, web-based application that can load deep linked content on
+            networked Android TV devices via ADB (Android Debug Bridge).</p>
+        <p>ADBTuner is fully configurable via a web interface interface with support for
+            multiple "tuner" devices and easily managed "channels."</p>
+    </section>
+    <br>
+    <section>
+        <video width="100%" controls>
+            <source src="/video/adbtuner.mp4" type="video/mp4">
+
+        </video>
+
+    </section>
+
+    <section>
+        <h2>Installation</h2>
+        <pre>
+docker run -d --init -p 5592:5592 --name adbtuner -v adbtuner_config:/app/.config turtletank99/adbtuner
+</pre>
+
+        <p><strong>or via Docker Compose:</strong></p>
+
+        <pre>
+version: '2'
+  services:
+    adbtuner:
+      image: turtletank99/adbtuner
+      restart: always
+      init: true
+      volumes:
+        - adbtuner_config:/app/.config
+      ports:
+        - "5592:5592"
+volumes:
+  adbtuner_config:
+</pre>
+
+    </section>
+
+    <section>
+        <p><strong>Web Interface</strong></p>
+        <p><a href="http://ip.of.docker.host:5592">http://ip.of.docker.host:5592</a></p>
+        <p><strong>Tuners</strong></p>
+        <p>A "tuner" consists of two configuration settings. The first is the Android/Google TV device's IP address. The
+            second, labeled "Streaming Endpoint" is for the URL to a HTTP video streaming device (HDMI receiver,
+            transmitter, etc.).</p>
+        <p>Before adding a new tuner, please ensure the following:</p>
+        <ul>
+            <li>Device has been freshly restarted and isn't actively connected to another ADB server.</li>
+            <li>Device is powered on.</li>
+            <li>Developer Mode is enabled.</li>
+            <li>The device remote is available to approve the connection.</li>
+        </ul>
+        <p><strong>Channels</strong></p>
+        <p>A channel consists of the following data fields:</p>
+        <ul>
+            <li><strong>Channel Number:</strong> Value: Any number. Used for ordering</li>
+            <li><strong>Provider Name:</strong> Value: Name of channel provider (ex. Hulu Live). Only used for reference
+                purposes</li>
+            <li><strong>Channel Name:</strong> Value: Name of channel (ex. NBC).</li>
+            <li><strong>Gracenote Station ID:</strong> Optional - Value: Gracenote / TVG id for this channel. If
+                provided, this ID will be included in generated m3u files.</li>
+            <li><strong>URL:</strong> Value: Deep link to the specified content (ex. <a
+                    href="https://www.hulu.com/watch/channel-1234567">https://www.hulu.com/watch/channel-1234567</a> or
+                nbctve://live/nbc)</li>
+            <li><strong>Package Name:</strong> Value: The name of the target Android application package (ex.
+                com.appmaker.appname.androidtv).</li>
+            <li><strong>Alternate Package Name:</strong> Optional. Value: An alternate Android application package name
+                (ex. com.appmaker.appname.firetv). This is useful with mismatched device types (ex Google TV and Fire
+                TV).</li>
+            <li><strong>Compatibility Mode:</strong> Some applications use non-standard video players and/or don't
+                respond to standard control actions such as "stop video." Enabling "compatibility mode" for this channel
+                enables more aggressive measures to ensure the target app properly loads the deep linked content. Your
+                results may vary.</li>
+        </ul>
+        <p>Channel lists can be imported and exported for backup purposes, sharing, or to migrate to another instance of
+            adbtuner. Export some data to see the current JSON document structure.</p>
+        <p><strong>M3U Playlist</strong></p>
+        <p>To provide easy access to all of the "channels" that are available to "tune" a dynamically generated M3U
+            playlist is available at:</p>
+        <p><code>http://ip.of.docker.host:5592/channels.m3u</code></p>
+        <p>This standard playlist can consumed by many different applications, many of which will let you switch between
+            each playlist item (channel) with ease.</p>
+        <p><strong>License</strong>: <strong>All rights reserved</strong> (pending open-source release)</p>
+    </section>
+
+
+    {{ $pages := .Site.RegularPages }}
+    {{ $paginator := .Paginate ($pages) }}
+    {{ range $paginator.Pages }}
+    {{ $title := .Title }}
+    {{ $summary := .Summary }}
+    <section class="item">
+        <div>
+            <h1 class="title"><a href='{{ .RelPermalink }}'>{{ $title }}</a></h1>
+            <div class="date">
+                <time datetime="{{ .PublishDate }}">{{ i18n "publishDate" . }}</time>
+            </div>
+        </div>
+
+        {{ if ne .Site.Params.hiddenPostSummaryInHomePage true }}
+        <div class="summary">{{ $summary | plainify | htmlUnescape }}</div>
+        {{ end }}
+
+    </section>
+    {{ end }}
+
+    {{ if or ($paginator.HasPrev) ($paginator.HasNext) }}
+    <div class="pagination">
+        {{ if $paginator.HasPrev }}
+        <span class="prev">
+            <a href="{{.Paginator.Prev.URL}}">
+                <span class="arrow">←</span>
+                {{ with .Site.Params.newerPosts }}{{ . }}{{ else }}{{ i18n "postsNewer" }}{{ end }}
+            </a>
+        </span>
+        {{ end }}
+
+        {{ if $paginator.HasNext }}
+        <span class="next">
+            <a href="{{.Paginator.Next.URL}}">
+                {{ with .Site.Params.olderPosts }}{{ . }}{{ else }}{{ i18n "postsOlder" }}{{ end }} <span
+                    class="arrow">→</span>
+            </a>
+        </span>
+        {{ end }}
+    </div>
+    {{ end }}
+
+
+</div>
+{{ end }}
