@@ -2,3 +2,5 @@ baseURL: https://adbtuner.github.io
 languageCode: en-us
 title: ADBTuner
 theme: mini
+params:
+  description: ADBTuner is a small, containerized, web-based application that can load deep linked content on networked Android TV devices via ADB (Android Debug Bridge).
